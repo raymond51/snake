@@ -1,0 +1,7 @@
+#Ignore folder
+.*
+!/.gitignore
+#Ignore files
+Makefile
+game
+*.o
