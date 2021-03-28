@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #define DEBUG_PRINT
+#define GRID_ARRAY_SIZE 20
 #define QUIT 'q'
 
 typedef struct Food
@@ -17,51 +18,50 @@ typedef struct Food
 typedef struct Snake
 {
     bool isRunning;
+    int board[GRID_ARRAY_SIZE][GRID_ARRAY_SIZE];
     Food food;
 } Snake;
 
-bool init_game(Snake *g);
+void init_game(Snake *g);
+void init_curses();
 void getInput(Snake *g);
 void print_in_middle(int startx, int starty, int width, char *string, WINDOW *win);
 
 int main(int argc, char const *argv[])
 {
     Snake *game = malloc(sizeof(game));
-    if (init_game(game))
-    {
-        /*Game loop*/
-        while (game->isRunning)
-        {
-            getInput(game);
-            usleep(32 * 1000); //FPS
-        }
-    }
+    init_game(game);
 
+    /*Game loop*/
+    while (game->isRunning)
+    {
+        getInput(game);
+        usleep(32 * 1000); //FPS
+    }
     free(game);
     endwin(); //end curses mode
     return EXIT_SUCCESS;
 }
 
-bool init_game(Snake *g)
+void init_game(Snake *g)
 {
-    bool status = true;
+    init_curses();
     (*g).isRunning = true;
-    char *welcome_string = "Welcome to SNAKE! (Press Any Key to start)";
+    /*Init all values in board array to 0*/
+    for (int i = 0; i < GRID_ARRAY_SIZE * GRID_ARRAY_SIZE; i++)
+        *((int *)(*g).board + i) = 0;
+}
 
+void init_curses()
+{
+    char *welcome_string = "Welcome to SNAKE! (Press any key to start)";
     initscr(); //init curses screen and manipulation routines
     cbreak();  //Immediate pass user input to program
     noecho();
-    keypad(stdscr, TRUE); //Enable arrow function keys
-    curs_set(FALSE);      //hide cursors
-
-    print_in_middle(0, LINES / 2, 0, welcome_string, NULL); //COLS - specify width of screen in characters
-    getch();                                                //wait for user input
-
-#ifdef DEBUG_PRINT
-    printf("Game error\n");
-#endif
-
-    return status;
+    keypad(stdscr, TRUE);                                      //Enable arrow function keys
+    curs_set(FALSE);                                           //hide cursors
+    print_in_middle(0, LINES / 2, COLS, welcome_string, NULL); //COLS - specify width of screen in characters
+    getch();
 }
 
 void getInput(Snake *g)
