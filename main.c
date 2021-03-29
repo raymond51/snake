@@ -10,16 +10,24 @@
 #define GRID_ARRAY_SIZE 20
 #define QUIT 'q'
 
+//default starting pos
+#define INIT_SNAKE_HEAD_X 10
+#define INIT_SNAKE_HEAD_Y 10
+#define INIT_FOOD_X 5
+#define INIT_FOOD_Y 10
+
 //Graphics
 #define gEMPTY ' '
 #define gBORDER '*'
+#define gFOOD 'X'
 
 enum assets
 {
     EMPTY = 0,
     BORDER,
     FOOD,
-    SNAKE_HEAD
+    SNAKE_HEAD,
+    SNAKE_BODY
 };
 
 typedef struct Food
@@ -86,6 +94,9 @@ void draw_board(Snake *g)
             case BORDER:
                 printw("%c ", gBORDER);
                 break;
+            case FOOD:
+                printw("%c ", gFOOD);
+                break;
             }
         }
         printw("\n");
@@ -110,6 +121,8 @@ bool init_game(Snake *g)
             (*g).isRunning = true;
             /*Create snake border*/
             generate_snake_border(g);
+            /*default food pos*/
+            (*g).board[INIT_FOOD_Y][INIT_FOOD_X] = FOOD;
         }
     }
     return status;
