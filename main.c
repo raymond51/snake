@@ -19,7 +19,9 @@
 //Graphics
 #define gEMPTY ' '
 #define gBORDER '*'
-#define gFOOD 'X'
+#define gFOOD 'O'
+#define gSNAKE_H 'X'
+#define gSNAKE_B '#'
 
 enum assets
 {
@@ -44,6 +46,7 @@ typedef struct Snake
 
 bool init_game(Snake *g);
 void init_curses();
+void init_snake_body(Snake *g);
 void generate_snake_border(Snake *g);
 void draw(Snake *g);
 void draw_board(Snake *g);
@@ -97,6 +100,12 @@ void draw_board(Snake *g)
             case FOOD:
                 printw("%c ", gFOOD);
                 break;
+            case SNAKE_HEAD:
+                printw("%c ", gSNAKE_H);
+                break;
+            case SNAKE_BODY:
+                printw("%c ", gSNAKE_B);
+                break;
             }
         }
         printw("\n");
@@ -121,6 +130,7 @@ bool init_game(Snake *g)
             (*g).isRunning = true;
             /*Create snake border*/
             generate_snake_border(g);
+            init_snake_body(g);
             /*default food pos*/
             (*g).board[INIT_FOOD_Y][INIT_FOOD_X] = FOOD;
         }
@@ -153,6 +163,13 @@ void init_curses()
     curs_set(FALSE);                                           //hide cursors
     print_in_middle(0, LINES / 2, COLS, welcome_string, NULL); //COLS - specify width of screen in characters
     getch();
+}
+
+void init_snake_body(Snake *g)
+{
+    (*g).board[INIT_SNAKE_HEAD_Y][INIT_SNAKE_HEAD_X] = SNAKE_HEAD;
+    (*g).board[INIT_SNAKE_HEAD_Y][INIT_SNAKE_HEAD_X + 1] = SNAKE_BODY;
+    (*g).board[INIT_SNAKE_HEAD_Y][INIT_SNAKE_HEAD_X + 2] = SNAKE_BODY;
 }
 
 void getInput(Snake *g)
