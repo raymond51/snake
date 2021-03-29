@@ -12,7 +12,8 @@
 
 enum assets
 {
-    BORDER = 1,
+    EMPTY = 0,
+    BORDER,
     FOOD,
     SNAKE_HEAD
 };
@@ -25,42 +26,68 @@ typedef struct Food
 typedef struct Snake
 {
     bool isRunning;
-    int board[GRID_ARRAY_SIZE][GRID_ARRAY_SIZE];
+    int (*board)[GRID_ARRAY_SIZE];
     Food food;
 } Snake;
 
-void init_game(Snake *g);
+bool init_game(Snake *g);
 void init_curses();
 void generate_snake_border(Snake *g);
+void draw(Snake *g);
 void getInput(Snake *g);
 void print_in_middle(int startx, int starty, int width, char *string, WINDOW *win);
 
 int main(int argc, char const *argv[])
 {
     Snake *game = malloc(sizeof(game));
-    init_game(game);
+    init_curses();
 
-    /*Game loop*/
+    if (init_game(game))
+    {
+        /*Game loop*/
+        /*
     while (game->isRunning)
     {
         getInput(game);
+        draw(game);
         usleep(32 * 1000); //FPS
     }
+*/
+    }
+    free((*game).board);
     free(game);
     endwin(); //end curses mode
     return EXIT_SUCCESS;
 }
 
-void init_game(Snake *g)
+void draw(Snake *g)
 {
-    init_curses();
-    (*g).isRunning = true;
-    /*Init all values in board array to 0*/
-    for (int i = 0; i < GRID_ARRAY_SIZE * GRID_ARRAY_SIZE; i++)
-        *((int *)(*g).board + i) = 0;
+    wclear(stdscr);
+    mvprintw(24, 0, "Press F1 to Exit");
+    refresh();
+}
 
-    /*Create snake border*/
-    generate_snake_border(g);
+bool init_game(Snake *g)
+{
+    bool status = true;
+    if (g == NULL)
+    {
+        status = false;
+#ifdef DEBUG_PRINT
+        printf("Error allocating memory to Game");
+#endif
+    }
+    else
+    {
+        (*g).board = malloc(sizeof(int[GRID_ARRAY_SIZE][GRID_ARRAY_SIZE]));
+        if ((*g).board != NULL)
+        {
+            (*g).isRunning = true;
+            /*Create snake border*/
+            generate_snake_border(g);
+        }
+    }
+    return status;
 }
 
 void generate_snake_border(Snake *g)
@@ -72,6 +99,8 @@ void generate_snake_border(Snake *g)
             //COL 0, ROW 0, LAST COL, LAST ROW
             if (i == 0 || j == 0 || i == GRID_ARRAY_SIZE - 1 || j == GRID_ARRAY_SIZE - 1)
                 (*g).board[i][j] = BORDER;
+            else
+                (*g).board[i][j] = EMPTY;
         }
     }
 }
