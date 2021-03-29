@@ -10,6 +10,10 @@
 #define GRID_ARRAY_SIZE 20
 #define QUIT 'q'
 
+//Graphics
+#define gEMPTY ' '
+#define gBORDER '*'
+
 enum assets
 {
     EMPTY = 0,
@@ -34,6 +38,7 @@ bool init_game(Snake *g);
 void init_curses();
 void generate_snake_border(Snake *g);
 void draw(Snake *g);
+void draw_board(Snake *g);
 void getInput(Snake *g);
 void print_in_middle(int startx, int starty, int width, char *string, WINDOW *win);
 
@@ -45,14 +50,13 @@ int main(int argc, char const *argv[])
     if (init_game(game))
     {
         /*Game loop*/
-        /*
-    while (game->isRunning)
-    {
-        getInput(game);
-        draw(game);
-        usleep(32 * 1000); //FPS
-    }
-*/
+
+        while (game->isRunning)
+        {
+            getInput(game);
+            draw(game);
+            usleep(32 * 1000); //FPS
+        }
     }
     free((*game).board);
     free(game);
@@ -63,8 +67,29 @@ int main(int argc, char const *argv[])
 void draw(Snake *g)
 {
     wclear(stdscr);
-    mvprintw(24, 0, "Press F1 to Exit");
+    draw_board(g);
+    //mvprintw(24, 0, "str");
     refresh();
+}
+
+void draw_board(Snake *g)
+{
+    for (int i = 0; i < GRID_ARRAY_SIZE; i++)
+    {
+        for (int j = 0; j < GRID_ARRAY_SIZE; j++)
+        {
+            switch ((*g).board[i][j])
+            {
+            case EMPTY:
+                printw("%c ", gEMPTY);
+                break;
+            case BORDER:
+                printw("%c ", gBORDER);
+                break;
+            }
+        }
+        printw("\n");
+    }
 }
 
 bool init_game(Snake *g)
