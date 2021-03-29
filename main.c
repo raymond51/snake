@@ -10,6 +10,13 @@
 #define GRID_ARRAY_SIZE 20
 #define QUIT 'q'
 
+enum assets
+{
+    BORDER = 1,
+    FOOD,
+    SNAKE_HEAD
+};
+
 typedef struct Food
 {
 
@@ -24,6 +31,7 @@ typedef struct Snake
 
 void init_game(Snake *g);
 void init_curses();
+void generate_snake_border(Snake *g);
 void getInput(Snake *g);
 void print_in_middle(int startx, int starty, int width, char *string, WINDOW *win);
 
@@ -50,6 +58,22 @@ void init_game(Snake *g)
     /*Init all values in board array to 0*/
     for (int i = 0; i < GRID_ARRAY_SIZE * GRID_ARRAY_SIZE; i++)
         *((int *)(*g).board + i) = 0;
+
+    /*Create snake border*/
+    generate_snake_border(g);
+}
+
+void generate_snake_border(Snake *g)
+{
+    for (int i = 0; i < GRID_ARRAY_SIZE; i++)
+    {
+        for (int j = 0; j < GRID_ARRAY_SIZE; j++)
+        {
+            //COL 0, ROW 0, LAST COL, LAST ROW
+            if (i == 0 || j == 0 || i == GRID_ARRAY_SIZE - 1 || j == GRID_ARRAY_SIZE - 1)
+                (*g).board[i][j] = BORDER;
+        }
+    }
 }
 
 void init_curses()
