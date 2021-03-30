@@ -63,6 +63,7 @@ void draw_board(Snake *g);
 void printControls();
 void getInput(Snake *g);
 void print_in_middle(int startx, int starty, int width, char *string, WINDOW *win);
+void free_list(node *head);
 
 int main(int argc, char const *argv[])
 {
@@ -80,6 +81,7 @@ int main(int argc, char const *argv[])
             usleep(32 * 1000); //FPS
         }
     }
+    free_list((*game).head);
     free((*game).board);
     free(game);
     endwin(); //end curses mode
@@ -228,6 +230,17 @@ void append_snake_body_node(node *head, int x, int y)
         lastNode = (*lastNode).next;
     }
     (*lastNode).next = newNode;
+}
+
+void free_list(node *head)
+{
+    node *tmp;
+    while (head != NULL)
+    {
+        tmp = head;
+        head = (*head).next;
+        free(tmp);
+    }
 }
 
 void printControls()
