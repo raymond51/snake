@@ -47,6 +47,7 @@ typedef struct snake_node
 typedef struct Snake
 {
     bool isRunning;
+    int score;
     int (*board)[GRID_ARRAY_SIZE];
     Food food;
     node *head;
@@ -65,7 +66,7 @@ void update(Snake *g);
 void printControls();
 void getInput(Snake *g);
 void print_in_middle(int startx, int starty, int width, char *string, WINDOW *win);
-void free_list(node *head);
+void free_list(node **head);
 
 int main(int argc, char const *argv[])
 {
@@ -84,7 +85,7 @@ int main(int argc, char const *argv[])
             usleep(32 * 1000); //FPS
         }
     }
-    free_list((*game).head);
+    free_list(&(*game).head);
     free((*game).board);
     free(game);
     endwin(); //end curses mode
@@ -97,6 +98,8 @@ void draw(Snake *g)
     //clear board via setting EMPTY
     add_snake_to_board(g);
     draw_board(g);
+    /*print score*/
+    mvwprintw(stdscr, 20, 15, "Score:%i", (*g).score);
     printControls();
     refresh();
 }
@@ -160,6 +163,7 @@ bool init_game(Snake *g)
             (*g).food.x_pos = INIT_FOOD_X;
             (*g).food.y_pos = INIT_FOOD_Y;
             (*g).board[INIT_FOOD_Y][INIT_FOOD_X] = FOOD;
+            (*g).score = 0;
         }
     }
     return status;
@@ -244,17 +248,17 @@ void append_snake_body_node(node *head, int x, int y)
     (*lastNode).next = newNode;
 }
 
-void free_list(node *head)
+void free_list(node **head)
 {
-    /*
-    node *tmp;
-    while (head != NULL)
+    node *curr = *head;
+    node *next;
+    while (curr != NULL)
     {
-        tmp = head;
-        head = (*head).next;
-        free(tmp);
+        next = (*curr).next;
+        free(curr);
+        curr = next;
     }
-    */
+    *head = NULL; //deref real head in caller
 }
 
 void printControls()
