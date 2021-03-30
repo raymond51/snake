@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #define DEBUG_PRINT
+#define WELCOME "Welcome to SNAKE! (Press any key to start)"
 #define GRID_ARRAY_SIZE 20
 #define QUIT 'q'
 
@@ -34,7 +35,7 @@ enum assets
 
 typedef struct Food
 {
-    int x_pos, ypos;
+    int x_pos, y_pos;
 } Food;
 
 typedef struct snake_node
@@ -60,6 +61,7 @@ void append_snake_body_node(node *head, int x, int y);
 void add_snake_to_board(Snake *g);
 void draw(Snake *g);
 void draw_board(Snake *g);
+void update(Snake *g);
 void printControls();
 void getInput(Snake *g);
 void print_in_middle(int startx, int starty, int width, char *string, WINDOW *win);
@@ -78,6 +80,7 @@ int main(int argc, char const *argv[])
         {
             getInput(game);
             draw(game);
+            update(game);
             usleep(32 * 1000); //FPS
         }
     }
@@ -96,6 +99,13 @@ void draw(Snake *g)
     draw_board(g);
     printControls();
     refresh();
+}
+
+void update(Snake *g)
+{
+    //using non-blocking 1 second tracking to
+    //clear board via setting EMPTY
+    //using new input e.g dir update snake pos/movement -shifting
 }
 
 void draw_board(Snake *g)
@@ -147,6 +157,8 @@ bool init_game(Snake *g)
             generate_snake_border(g);
             init_snake_body(g);
             /*default food pos*/
+            (*g).food.x_pos = INIT_FOOD_X;
+            (*g).food.y_pos = INIT_FOOD_Y;
             (*g).board[INIT_FOOD_Y][INIT_FOOD_X] = FOOD;
         }
     }
@@ -170,7 +182,7 @@ void generate_snake_border(Snake *g)
 
 void init_curses()
 {
-    char *welcome_string = "Welcome to SNAKE! (Press any key to start)";
+    char *welcome_string = WELCOME;
     initscr(); //init curses screen and manipulation routines
     cbreak();  //Immediate pass user input to program
     noecho();
@@ -234,6 +246,7 @@ void append_snake_body_node(node *head, int x, int y)
 
 void free_list(node *head)
 {
+    /*
     node *tmp;
     while (head != NULL)
     {
@@ -241,6 +254,7 @@ void free_list(node *head)
         head = (*head).next;
         free(tmp);
     }
+    */
 }
 
 void printControls()
