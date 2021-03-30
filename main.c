@@ -34,20 +34,29 @@ enum assets
 
 typedef struct Food
 {
-
+    int x_pos, ypos;
 } Food;
+
+typedef struct snake_node
+{
+    int x_pos, y_pos;
+    struct snake_node *next;
+} node;
 
 typedef struct Snake
 {
     bool isRunning;
     int (*board)[GRID_ARRAY_SIZE];
     Food food;
+    node *head;
 } Snake;
 
 bool init_game(Snake *g);
 void init_curses();
 void init_snake_body(Snake *g);
 void generate_snake_border(Snake *g);
+void add_snake_body(node *head, int x, int y);
+void add_snake_to_board(Snake *g);
 void draw(Snake *g);
 void draw_board(Snake *g);
 void printControls();
@@ -79,6 +88,8 @@ int main(int argc, char const *argv[])
 void draw(Snake *g)
 {
     wclear(stdscr);
+    //clear board via setting EMPTY
+    add_snake_to_board(g);
     draw_board(g);
     printControls();
     refresh();
@@ -168,9 +179,49 @@ void init_curses()
 
 void init_snake_body(Snake *g)
 {
-    (*g).board[INIT_SNAKE_HEAD_Y][INIT_SNAKE_HEAD_X] = SNAKE_HEAD;
-    (*g).board[INIT_SNAKE_HEAD_Y][INIT_SNAKE_HEAD_X + 1] = SNAKE_BODY;
-    (*g).board[INIT_SNAKE_HEAD_Y][INIT_SNAKE_HEAD_X + 2] = SNAKE_BODY;
+    (*g).head = NULL;
+    add_snake_body((*g).head, INIT_SNAKE_HEAD_X, INIT_SNAKE_HEAD_Y); //head
+    add_snake_body((*g).head, INIT_SNAKE_HEAD_X + 1, INIT_SNAKE_HEAD_Y);
+    add_snake_body((*g).head, INIT_SNAKE_HEAD_X + 2, INIT_SNAKE_HEAD_Y);
+}
+
+void add_snake_to_board(Snake *g)
+{
+    node *current = (*g).head;
+    bool isSnakeHead = true;
+    while (current != NULL)
+    {
+        if (isSnakeHead)
+        {
+            isSnakeHead = false; //first instance of snake head
+            (*g).board[(*current).y_pos][(*current).x_pos] = SNAKE_HEAD;
+        }
+        else
+        {
+            (*g).board[(*current).y_pos][(*current).x_pos] = SNAKE_BODY;
+        }
+        current = (*current).next;
+    }
+}
+
+void add_snake_body(node *head, int x, int y)
+{
+    /*New node*/
+    node *newNode = malloc(sizeof(*newNode));
+    (*newNode).x_pos = x;
+    (*newNode).y_pos = y;
+
+    if (head == NULL)
+        head = newNode;
+    else
+    {
+        node *lastNode = head;
+        while ((*lastNode).next != NULL)
+        {
+            lastNode = (*lastNode).next;
+        }
+        (*lastNode).next = newNode;
+    }
 }
 
 void printControls()
