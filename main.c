@@ -50,6 +50,7 @@ void init_snake_body(Snake *g);
 void generate_snake_border(Snake *g);
 void draw(Snake *g);
 void draw_board(Snake *g);
+void printControls();
 void getInput(Snake *g);
 void print_in_middle(int startx, int starty, int width, char *string, WINDOW *win);
 
@@ -79,7 +80,7 @@ void draw(Snake *g)
 {
     wclear(stdscr);
     draw_board(g);
-    //mvprintw(24, 0, "str");
+    printControls();
     refresh();
 }
 
@@ -170,6 +171,13 @@ void init_snake_body(Snake *g)
     (*g).board[INIT_SNAKE_HEAD_Y][INIT_SNAKE_HEAD_X] = SNAKE_HEAD;
     (*g).board[INIT_SNAKE_HEAD_Y][INIT_SNAKE_HEAD_X + 1] = SNAKE_BODY;
     (*g).board[INIT_SNAKE_HEAD_Y][INIT_SNAKE_HEAD_X + 2] = SNAKE_BODY;
+}
+
+void printControls()
+{
+    mvprintw(21, 0, "Controls:");
+    mvprintw(22, 0, "   Movements - Arrow keys");
+    mvprintw(23, 0, "   Quit - q");
 }
 
 void getInput(Snake *g)
