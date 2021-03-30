@@ -9,6 +9,7 @@
 #define DEBUG_PRINT
 #define WELCOME "Welcome to SNAKE! (Press any key to start)"
 #define GRID_ARRAY_SIZE 20
+#define FPS 30
 #define QUIT 'q'
 
 //default starting pos
@@ -47,7 +48,9 @@ typedef struct snake_node
 typedef struct Snake
 {
     bool isRunning;
-    int score;
+    short second_counter;
+    short score;
+
     int (*board)[GRID_ARRAY_SIZE];
     Food food;
     node *head;
@@ -109,6 +112,13 @@ void update(Snake *g)
     //using non-blocking 1 second tracking to
     //clear board via setting EMPTY
     //using new input e.g dir update snake pos/movement -shifting
+
+    if ((*g).second_counter >= FPS)
+    {
+        (*g).second_counter = 0;
+        (*g).score++;
+    }
+    (*g).second_counter++;
 }
 
 void draw_board(Snake *g)
@@ -164,6 +174,7 @@ bool init_game(Snake *g)
             (*g).food.y_pos = INIT_FOOD_Y;
             (*g).board[INIT_FOOD_Y][INIT_FOOD_X] = FOOD;
             (*g).score = 0;
+            (*g).second_counter = 0;
         }
     }
     return status;
