@@ -55,7 +55,7 @@ bool init_game(Snake *g);
 void init_curses();
 void init_snake_body(Snake *g);
 void generate_snake_border(Snake *g);
-void add_snake_body(node *head, int x, int y);
+void add_snake_body(node **head, int x, int y);
 void add_snake_to_board(Snake *g);
 void draw(Snake *g);
 void draw_board(Snake *g);
@@ -180,9 +180,9 @@ void init_curses()
 void init_snake_body(Snake *g)
 {
     (*g).head = NULL;
-    add_snake_body((*g).head, INIT_SNAKE_HEAD_X, INIT_SNAKE_HEAD_Y); //head
-    add_snake_body((*g).head, INIT_SNAKE_HEAD_X + 1, INIT_SNAKE_HEAD_Y);
-    add_snake_body((*g).head, INIT_SNAKE_HEAD_X + 2, INIT_SNAKE_HEAD_Y);
+    add_snake_body(&(*g).head, INIT_SNAKE_HEAD_X, INIT_SNAKE_HEAD_Y); //head
+    add_snake_body(&(*g).head, INIT_SNAKE_HEAD_X + 1, INIT_SNAKE_HEAD_Y);
+    add_snake_body(&(*g).head, INIT_SNAKE_HEAD_X + 2, INIT_SNAKE_HEAD_Y);
 }
 
 void add_snake_to_board(Snake *g)
@@ -204,18 +204,18 @@ void add_snake_to_board(Snake *g)
     }
 }
 
-void add_snake_body(node *head, int x, int y)
+void add_snake_body(node **head, int x, int y)
 {
     /*New node*/
     node *newNode = malloc(sizeof(*newNode));
     (*newNode).x_pos = x;
     (*newNode).y_pos = y;
 
-    if (head == NULL)
-        head = newNode;
+    if (*head == NULL)
+        *head = newNode;
     else
     {
-        node *lastNode = head;
+        node *lastNode = *head;
         while ((*lastNode).next != NULL)
         {
             lastNode = (*lastNode).next;
