@@ -10,6 +10,8 @@
 #define WELCOME "Welcome to SNAKE! (Press any key to start)"
 #define GRID_ARRAY_SIZE 20
 #define FPS 30
+
+//CONTROLS
 #define QUIT 'q'
 
 //default starting pos
@@ -32,6 +34,15 @@ enum assets
     FOOD,
     SNAKE_HEAD,
     SNAKE_BODY
+};
+
+enum dir
+{
+    NO_MOVEMENT = 0,
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN
 };
 
 typedef struct Food
@@ -122,7 +133,7 @@ void update(Snake *g)
     if ((*g).second_counter >= FPS)
     {
         (*g).second_counter = 0;
-        (*g).score++;
+        //Action
     }
     (*g).second_counter++;
 }
@@ -290,10 +301,21 @@ void printControls()
 
 void getInput(Snake *g)
 {
-    char c;
-    c = getch();
+    int c = getch();
     switch (c)
     {
+    case KEY_UP:
+        (*g).ydir = -1;
+        break;
+    case KEY_DOWN:
+        (*g).ydir = 1;
+        break;
+    case KEY_LEFT:
+        (*g).xdir = -1;
+        break;
+    case KEY_RIGHT:
+        (*g).xdir = 1;
+        break;
     case QUIT:
         (*g).isRunning = false;
         break;
