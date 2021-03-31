@@ -149,8 +149,22 @@ void update(Snake *g)
         (*g).second_counter = 0;
         //Action
         detect_snake_collision(g);
-        clear_board(g);
-        move_snake(g);
+        if ((*g).collision_id == NO_COLLISION)
+        {
+            clear_board(g);
+            move_snake(g);
+        }
+        else if ((*g).collision_id == BODY_COLLISION || (*g).collision_id == BORDER_COLLISION)
+        {
+            wclear(stdscr);
+            mvwprintw(stdscr, 10, 20, "GAME OVER!");
+            mvwprintw(stdscr, 20, 15, "Score:%i", (*g).score);
+            printControls();
+            refresh();
+            timeout(-1); //blocking input
+            getch();
+            (*g).isRunning = false;
+        }
     }
     (*g).second_counter++;
 }
@@ -307,6 +321,8 @@ void detect_snake_collision(Snake *g)
     short x_head_new_coord = (*current).x_pos + movement_dir_x(g),
           y_head_new_coord = (*current).y_pos + movement_dir_y(g); //no movement - no update
     bool isSnakeHead = true;
+
+    /*Body collision*/
 
     while (current != NULL)
     {
