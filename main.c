@@ -45,6 +45,14 @@ enum dir
     DOWN
 };
 
+enum collision_type
+{
+    NO_COLLISION = 0,
+    FOOD_COLLISION,
+    BODY_COLLISION,
+    BORDER_COLLISION
+};
+
 typedef struct Food
 {
     int x_pos, y_pos;
@@ -62,6 +70,7 @@ typedef struct Snake
     short second_counter;
     short score;
     short curDir;
+    short collision_id;
 
     int (*board)[GRID_ARRAY_SIZE];
     Food food;
@@ -75,7 +84,7 @@ void generate_snake_border(Snake *g);
 node *create_snake_head_node(int x, int y);
 void append_snake_body_node(node *head, int x, int y);
 void add_snake_to_board(Snake *g);
-void is_snake_collision_body(Snake *g);
+void detect_snake_collision(Snake *g);
 short movement_dir_x(Snake *g);
 short movement_dir_y(Snake *g);
 void clear_board(Snake *g);
@@ -124,6 +133,7 @@ void draw(Snake *g)
     /*Debug info*/
 #ifdef DEBUG_PRINT
     mvwprintw(stdscr, 2, 40, "dir:%i", (*g).curDir);
+    mvwprintw(stdscr, 3, 40, "Collision ID::%i", (*g).collision_id);
 #endif
     refresh();
 }
@@ -138,9 +148,9 @@ void update(Snake *g)
     {
         (*g).second_counter = 0;
         //Action
+        detect_snake_collision(g);
         clear_board(g);
         move_snake(g);
-        //is_snake_collision_body(g);
     }
     (*g).second_counter++;
 }
@@ -200,6 +210,7 @@ bool init_game(Snake *g)
             (*g).score = 0;
             (*g).second_counter = 0;
             (*g).curDir = NO_MOVEMENT;
+            (*g).collision_id = NO_COLLISION;
 
             timeout(0); //non-blocking read input for getch()
         }
@@ -289,8 +300,33 @@ void move_snake(Snake *g)
     }
 }
 
-void is_snake_collision_body(Snake *g)
+void detect_snake_collision(Snake *g)
 {
+    node *current = (*g).head;
+    /*Store new head position based on moving dir*/
+    short x_head_new_coord = (*current).x_pos + movement_dir_x(g),
+          y_head_new_coord = (*current).y_pos + movement_dir_y(g); //no movement - no update
+    bool isSnakeHead = true;
+
+    while (current != NULL)
+    {
+        /*Update only if there is movement*/
+        if ((*g).curDir != NO_MOVEMENT)
+        {
+            if (isSnakeHead)
+            {
+                isSnakeHead = false;
+            }
+            else
+            {
+                if ((*current).x_pos == x_head_new_coord && (*current).y_pos == y_head_new_coord)
+                {
+                    (*g).collision_id = BODY_COLLISION; //set collision
+                }
+            }
+        }
+        current = (*current).next;
+    }
 }
 
 short movement_dir_x(Snake *g)
