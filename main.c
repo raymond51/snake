@@ -175,6 +175,7 @@ bool init_game(Snake *g)
             (*g).board[INIT_FOOD_Y][INIT_FOOD_X] = FOOD;
             (*g).score = 0;
             (*g).second_counter = 0;
+            timeout(0);
         }
     }
     return status;
