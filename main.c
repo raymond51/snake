@@ -171,10 +171,9 @@ void update(Snake *g)
         {
             (*g).collision_id = NO_COLLISION; //reset collision
             (*g).score++;
-            clear_board(g);
-            move_snake(g); //update snake body
+            move_snake(g);                                                       //update snake body
+            append_snake_body_node((*g).head, (*g).tail.x_pos, (*g).tail.y_pos); //add new snake body
             generate_food(g);
-            append_snake_body_node((*g).head, (*g).tail.x_pos, (*g).tail.x_pos); //add new snake body
         }
     }
     (*g).second_counter++;
