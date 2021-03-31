@@ -61,8 +61,7 @@ typedef struct Snake
     bool isRunning;
     short second_counter;
     short score;
-    short xdir;
-    short ydir;
+    short curDir;
 
     int (*board)[GRID_ARRAY_SIZE];
     Food food;
@@ -76,6 +75,7 @@ void generate_snake_border(Snake *g);
 node *create_snake_head_node(int x, int y);
 void append_snake_body_node(node *head, int x, int y);
 void add_snake_to_board(Snake *g);
+void move_snake(Snake *g);
 void draw(Snake *g);
 void draw_board(Snake *g);
 void update(Snake *g);
@@ -119,7 +119,7 @@ void draw(Snake *g)
     printControls();
     /*Debug info*/
 #ifdef DEBUG_PRINT
-    mvwprintw(stdscr, 2, 40, "dir X:%i dir Y:%i", (*g).xdir, (*g).ydir);
+    mvwprintw(stdscr, 2, 40, "dir:%i", (*g).curDir);
 #endif
     refresh();
 }
@@ -134,6 +134,7 @@ void update(Snake *g)
     {
         (*g).second_counter = 0;
         //Action
+        move_snake(g);
     }
     (*g).second_counter++;
 }
@@ -192,8 +193,8 @@ bool init_game(Snake *g)
             (*g).board[INIT_FOOD_Y][INIT_FOOD_X] = FOOD;
             (*g).score = 0;
             (*g).second_counter = 0;
-            (*g).xdir = 0;
-            (*g).ydir = 0;
+            (*g).curDir = NO_MOVEMENT;
+
             timeout(0); //non-blocking read input for getch()
         }
     }
@@ -233,6 +234,34 @@ void init_snake_body(Snake *g)
     (*g).head = create_snake_head_node(INIT_SNAKE_HEAD_X, INIT_SNAKE_HEAD_Y); //head
     append_snake_body_node((*g).head, INIT_SNAKE_HEAD_X + 1, INIT_SNAKE_HEAD_Y);
     append_snake_body_node((*g).head, INIT_SNAKE_HEAD_X + 2, INIT_SNAKE_HEAD_Y);
+}
+
+void move_snake(Snake *g)
+{
+    node *current = (*g).head;
+    short x_dir_temp = 0, y_dir_temp = 0; //no movement - no update
+    while (current != NULL)
+    {
+        switch ((*g).curDir)
+        {
+        case UP:
+            y_dir_temp = -1;
+            break;
+        case DOWN:
+            y_dir_temp = 1;
+            break;
+        case LEFT:
+            x_dir_temp = -1;
+            break;
+        case RIGHT:
+            x_dir_temp = 1;
+            break;
+        }
+
+        (*current).x_pos += x_dir_temp;
+        (*current).y_pos += y_dir_temp;
+        current = (*current).next;
+    }
 }
 
 void add_snake_to_board(Snake *g)
@@ -305,16 +334,16 @@ void getInput(Snake *g)
     switch (c)
     {
     case KEY_UP:
-        (*g).ydir = -1;
+        (*g).curDir = UP;
         break;
     case KEY_DOWN:
-        (*g).ydir = 1;
+        (*g).curDir = DOWN;
         break;
     case KEY_LEFT:
-        (*g).xdir = -1;
+        (*g).curDir = LEFT;
         break;
     case KEY_RIGHT:
-        (*g).xdir = 1;
+        (*g).curDir = RIGHT;
         break;
     case QUIT:
         (*g).isRunning = false;
