@@ -75,6 +75,9 @@ void generate_snake_border(Snake *g);
 node *create_snake_head_node(int x, int y);
 void append_snake_body_node(node *head, int x, int y);
 void add_snake_to_board(Snake *g);
+void is_snake_collision_body(Snake *g);
+short movement_dir_x(Snake *g);
+short movement_dir_y(Snake *g);
 void clear_board(Snake *g);
 void move_snake(Snake *g);
 void draw(Snake *g);
@@ -137,6 +140,7 @@ void update(Snake *g)
         //Action
         clear_board(g);
         move_snake(g);
+        //is_snake_collision_body(g);
     }
     (*g).second_counter++;
 }
@@ -248,29 +252,16 @@ void init_snake_body(Snake *g)
     (*g).head = create_snake_head_node(INIT_SNAKE_HEAD_X, INIT_SNAKE_HEAD_Y); //head
     append_snake_body_node((*g).head, INIT_SNAKE_HEAD_X + 1, INIT_SNAKE_HEAD_Y);
     append_snake_body_node((*g).head, INIT_SNAKE_HEAD_X + 2, INIT_SNAKE_HEAD_Y);
+    append_snake_body_node((*g).head, INIT_SNAKE_HEAD_X + 3, INIT_SNAKE_HEAD_Y);
+    append_snake_body_node((*g).head, INIT_SNAKE_HEAD_X + 4, INIT_SNAKE_HEAD_Y);
 }
 
 void move_snake(Snake *g)
 {
     node *current = (*g).head;
-    short x_dir_temp = 0, y_dir_temp = 0; //no movement - no update
-    short x_prev, y_prev;                 //store prev coordinates
+    short x_dir_temp = movement_dir_x(g), y_dir_temp = movement_dir_y(g); //no movement - no update
+    short x_prev, y_prev;                                                 //store prev coordinates
     bool isSnakeHead = true;
-    switch ((*g).curDir)
-    {
-    case UP:
-        y_dir_temp = -1;
-        break;
-    case DOWN:
-        y_dir_temp = 1;
-        break;
-    case LEFT:
-        x_dir_temp = -1;
-        break;
-    case RIGHT:
-        x_dir_temp = 1;
-        break;
-    }
 
     while (current != NULL)
     {
@@ -296,6 +287,44 @@ void move_snake(Snake *g)
         }
         current = (*current).next;
     }
+}
+
+void is_snake_collision_body(Snake *g)
+{
+}
+
+short movement_dir_x(Snake *g)
+{
+    short tmp;
+    switch ((*g).curDir)
+    {
+    case LEFT:
+        tmp = -1;
+        break;
+    case RIGHT:
+        tmp = 1;
+        break;
+    default: //No movement
+        tmp = 0;
+    }
+    return tmp;
+}
+
+short movement_dir_y(Snake *g)
+{
+    short tmp;
+    switch ((*g).curDir)
+    {
+    case UP:
+        tmp = -1;
+        break;
+    case DOWN:
+        tmp = 1;
+        break;
+    default: //No movement
+        tmp = 0;
+    }
+    return tmp;
 }
 
 void add_snake_to_board(Snake *g)
