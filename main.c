@@ -129,7 +129,7 @@ int main(int argc, char const *argv[])
 void draw(Snake *g)
 {
     wclear(stdscr);
-    //clear board via setting EMPTY
+    clear_board(g);
     add_snake_to_board(g);
     (*g).board[(*g).food.y_pos][(*g).food.x_pos] = FOOD; // add food to board
     draw_board(g);
