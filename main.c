@@ -8,7 +8,7 @@
 #define DEBUG_PRINT
 #define WELCOME "Welcome to SNAKE! (Press any key to start)"
 #define GRID_ARRAY_SIZE 20
-#define FPS 30
+#define MOVE_SPEED 20
 
 //CONTROLS
 #define QUIT 'q'
@@ -146,7 +146,7 @@ void draw(Snake *g)
 
 void update(Snake *g)
 {
-    if ((*g).second_counter >= FPS)
+    if ((*g).second_counter >= MOVE_SPEED)
     {
         (*g).second_counter = 0;
         //Action
