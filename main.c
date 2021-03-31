@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <time.h>
 
 #define DEBUG_PRINT
 #define WELCOME "Welcome to SNAKE! (Press any key to start)"
@@ -17,8 +18,6 @@
 //default starting pos
 #define INIT_SNAKE_HEAD_X 10
 #define INIT_SNAKE_HEAD_Y 10
-#define INIT_FOOD_X 5
-#define INIT_FOOD_Y 10
 
 //Graphics
 #define gEMPTY ' '
@@ -84,6 +83,7 @@ void generate_snake_border(Snake *g);
 node *create_snake_head_node(int x, int y);
 void append_snake_body_node(node *head, int x, int y);
 void add_snake_to_board(Snake *g);
+void generate_food(Snake *g);
 void detect_snake_collision(Snake *g);
 short movement_dir_x(Snake *g);
 short movement_dir_y(Snake *g);
@@ -126,6 +126,7 @@ void draw(Snake *g)
     wclear(stdscr);
     //clear board via setting EMPTY
     add_snake_to_board(g);
+    (*g).board[(*g).food.y_pos][(*g).food.x_pos] = FOOD; // add food to board
     draw_board(g);
     /*print score*/
     mvwprintw(stdscr, 20, 15, "Score:%i", (*g).score);
@@ -217,10 +218,11 @@ bool init_game(Snake *g)
             /*Create snake border*/
             generate_snake_border(g);
             init_snake_body(g);
-            /*default food pos*/
-            (*g).food.x_pos = INIT_FOOD_X;
-            (*g).food.y_pos = INIT_FOOD_Y;
-            (*g).board[INIT_FOOD_Y][INIT_FOOD_X] = FOOD;
+            add_snake_to_board(g);
+
+            srand(time(NULL)); //init rnd
+            generate_food(g);
+
             (*g).score = 0;
             (*g).second_counter = 0;
             (*g).curDir = NO_MOVEMENT;
@@ -247,6 +249,22 @@ void generate_snake_border(Snake *g)
     }
 }
 
+void generate_food(Snake *g)
+{
+    //generate num between 1 & 19
+    int x_new_food, y_new_food;
+
+    do
+    {
+        x_new_food = 1 + (rand() % (GRID_ARRAY_SIZE - 1));
+        y_new_food = 1 + (rand() % (GRID_ARRAY_SIZE - 1));
+
+    } while ((*g).board[y_new_food][x_new_food] != EMPTY);
+
+    /*update the struct value here with new coords*/
+    (*g).food.x_pos = x_new_food;
+    (*g).food.y_pos = y_new_food;
+}
 void init_curses()
 {
     char *welcome_string = WELCOME;
