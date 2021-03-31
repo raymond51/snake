@@ -1,5 +1,3 @@
-//MAN LIB - https://invisible-island.net/ncurses/man/ncurses.3x.html
-
 #include <ncurses.h>
 #include <string.h>
 #include <stdbool.h>
@@ -141,10 +139,6 @@ void draw(Snake *g)
 
 void update(Snake *g)
 {
-    //using non-blocking 1 second tracking to
-    //clear board via setting EMPTY
-    //using new input e.g dir update snake pos/movement -shifting
-
     if ((*g).second_counter >= FPS)
     {
         (*g).second_counter = 0;
@@ -165,6 +159,15 @@ void update(Snake *g)
             timeout(-1); //blocking input
             getch();
             (*g).isRunning = false;
+        }
+        else if ((*g).collision_id == FOOD_COLLISION)
+        {
+            (*g).collision_id = NO_COLLISION; //reset collision
+            (*g).score++;
+            clear_board(g);
+            move_snake(g); //update snake body
+            generate_food(g);
+            //add new snake body
         }
     }
     (*g).second_counter++;
@@ -368,6 +371,8 @@ void detect_snake_collision(Snake *g)
         (*g).collision_id = BORDER_COLLISION; //set collision
         return;
     }
+    else if ((*g).food.x_pos == x_head_new_coord && (*g).food.y_pos == y_head_new_coord)
+        (*g).collision_id = FOOD_COLLISION; //set collision
 }
 
 short movement_dir_x(Snake *g)
