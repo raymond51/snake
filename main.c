@@ -50,6 +50,8 @@ typedef struct Snake
     bool isRunning;
     short second_counter;
     short score;
+    short xdir;
+    short ydir;
 
     int (*board)[GRID_ARRAY_SIZE];
     Food food;
@@ -73,7 +75,7 @@ void free_list(node **head);
 
 int main(int argc, char const *argv[])
 {
-    Snake *game = malloc(sizeof(game));
+    Snake *game = malloc(sizeof(Snake));
     init_curses();
 
     if (init_game(game))
@@ -104,6 +106,10 @@ void draw(Snake *g)
     /*print score*/
     mvwprintw(stdscr, 20, 15, "Score:%i", (*g).score);
     printControls();
+    /*Debug info*/
+#ifdef DEBUG_PRINT
+    mvwprintw(stdscr, 2, 40, "dir X:%i dir Y:%i", (*g).xdir, (*g).ydir);
+#endif
     refresh();
 }
 
@@ -175,7 +181,9 @@ bool init_game(Snake *g)
             (*g).board[INIT_FOOD_Y][INIT_FOOD_X] = FOOD;
             (*g).score = 0;
             (*g).second_counter = 0;
-            timeout(0);
+            (*g).xdir = 0;
+            (*g).ydir = 0;
+            timeout(0); //non-blocking read input for getch()
         }
     }
     return status;
