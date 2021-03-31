@@ -254,26 +254,46 @@ void move_snake(Snake *g)
 {
     node *current = (*g).head;
     short x_dir_temp = 0, y_dir_temp = 0; //no movement - no update
+    short x_prev, y_prev;                 //store prev coordinates
+    bool isSnakeHead = true;
+    switch ((*g).curDir)
+    {
+    case UP:
+        y_dir_temp = -1;
+        break;
+    case DOWN:
+        y_dir_temp = 1;
+        break;
+    case LEFT:
+        x_dir_temp = -1;
+        break;
+    case RIGHT:
+        x_dir_temp = 1;
+        break;
+    }
+
     while (current != NULL)
     {
-        switch ((*g).curDir)
+        /*Update only if there is movement*/
+        if ((*g).curDir != NO_MOVEMENT)
         {
-        case UP:
-            y_dir_temp = -1;
-            break;
-        case DOWN:
-            y_dir_temp = 1;
-            break;
-        case LEFT:
-            x_dir_temp = -1;
-            break;
-        case RIGHT:
-            x_dir_temp = 1;
-            break;
+            if (isSnakeHead)
+            {
+                isSnakeHead = false;
+                x_prev = (*current).x_pos;
+                y_prev = (*current).y_pos;
+                (*current).x_pos += x_dir_temp;
+                (*current).y_pos += y_dir_temp;
+            }
+            else
+            {
+                int x_new = (*current).x_pos, y_new = (*current).y_pos;
+                (*current).x_pos = x_prev;
+                (*current).y_pos = y_prev;
+                x_prev = x_new; // store new coords
+                y_prev = y_new;
+            }
         }
-
-        (*current).x_pos += x_dir_temp;
-        (*current).y_pos += y_dir_temp;
         current = (*current).next;
     }
 }
