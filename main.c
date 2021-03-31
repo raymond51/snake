@@ -61,6 +61,11 @@ typedef struct snake_node
     struct snake_node *next;
 } node;
 
+typedef struct Tail
+{
+    int x_pos, y_pos;
+} Tail;
+
 typedef struct Snake
 {
     bool isRunning;
@@ -72,6 +77,8 @@ typedef struct Snake
     int (*board)[GRID_ARRAY_SIZE];
     Food food;
     node *head;
+    Tail tail;
+
 } Snake;
 
 bool init_game(Snake *g);
@@ -167,7 +174,7 @@ void update(Snake *g)
             clear_board(g);
             move_snake(g); //update snake body
             generate_food(g);
-            //add new snake body
+            append_snake_body_node((*g).head, (*g).tail.x_pos, (*g).tail.x_pos); //add new snake body
         }
     }
     (*g).second_counter++;
@@ -325,6 +332,9 @@ void move_snake(Snake *g)
             else
             {
                 int x_new = (*current).x_pos, y_new = (*current).y_pos;
+                /*Storing last element as tail*/
+                (*g).tail.x_pos = (*current).x_pos;
+                (*g).tail.y_pos = (*current).y_pos;
                 (*current).x_pos = x_prev;
                 (*current).y_pos = y_prev;
                 x_prev = x_new; // store new coords
