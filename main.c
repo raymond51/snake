@@ -338,10 +338,17 @@ void detect_snake_collision(Snake *g)
                 if ((*current).x_pos == x_head_new_coord && (*current).y_pos == y_head_new_coord)
                 {
                     (*g).collision_id = BODY_COLLISION; //set collision
+                    return;
                 }
             }
         }
         current = (*current).next;
+    }
+    /*Border collision*/
+    if (x_head_new_coord <= 0 || x_head_new_coord >= (GRID_ARRAY_SIZE - 1) || y_head_new_coord <= 0 || y_head_new_coord >= (GRID_ARRAY_SIZE - 1))
+    {
+        (*g).collision_id = BORDER_COLLISION; //set collision
+        return;
     }
 }
 
