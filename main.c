@@ -75,6 +75,7 @@ void generate_snake_border(Snake *g);
 node *create_snake_head_node(int x, int y);
 void append_snake_body_node(node *head, int x, int y);
 void add_snake_to_board(Snake *g);
+void clear_board(Snake *g);
 void move_snake(Snake *g);
 void draw(Snake *g);
 void draw_board(Snake *g);
@@ -134,6 +135,7 @@ void update(Snake *g)
     {
         (*g).second_counter = 0;
         //Action
+        clear_board(g);
         move_snake(g);
     }
     (*g).second_counter++;
@@ -226,6 +228,18 @@ void init_curses()
     curs_set(FALSE);                                           //hide cursors
     print_in_middle(0, LINES / 2, COLS, welcome_string, NULL); //COLS - specify width of screen in characters
     getch();
+}
+
+void clear_board(Snake *g)
+{
+    /*Clear within border*/
+    for (int i = 1; i < GRID_ARRAY_SIZE - 1; i++)
+    {
+        for (int j = 1; j < GRID_ARRAY_SIZE - 1; j++)
+        {
+            (*g).board[i][j] = EMPTY;
+        }
+    }
 }
 
 /*Create snake structure of 3 pieces*/
